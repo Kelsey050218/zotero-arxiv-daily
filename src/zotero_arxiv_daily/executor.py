@@ -49,10 +49,14 @@ class Executor:
         if self.config.executor.debug:
             item_type_counts = Counter(c['data'].get('itemType', 'unknown') for c in corpus)
             missing_abstracts = sum(c['data'].get('abstractNote', '') == '' for c in corpus)
+            missing_abstract_titles = [
+                c['data'].get('title', '') for c in corpus if c['data'].get('abstractNote', '') == ''
+            ]
             logger.info(
                 f"Zotero candidate items: {len(corpus)}; "
                 f"by type: {dict(sorted(item_type_counts.items()))}; "
-                f"missing abstracts: {missing_abstracts}"
+                f"missing abstracts: {missing_abstracts}; "
+                f"titles: {missing_abstract_titles}"
             )
         corpus = [c for c in corpus if c['data']['abstractNote'] != '']
         def get_collection_path(col_key:str) -> str:
