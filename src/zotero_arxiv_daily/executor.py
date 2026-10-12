@@ -5,6 +5,7 @@ from .utils import glob_match
 from .retriever import get_retriever_cls
 from .protocol import CorpusPaper
 import random
+from collections import Counter
 from datetime import datetime
 from .reranker import get_reranker_cls
 from .construct_email import render_email
@@ -45,6 +46,14 @@ class Executor:
         collections = zot.everything(zot.collections())
         collections = {c['key']:c for c in collections}
         corpus = zot.everything(zot.items(itemType='conferencePaper || journalArticle || preprint'))
+        if self.config.executor.debug:
+            item_type_counts = Counter(c['data'].get('itemType', 'unknown') for c in corpus)
+            missing_abstracts = sum(c['data'].get('abstractNote', '') == '' for c in corpus)
+            logger.info(
+                f"Zotero candidate items: {len(corpus)}; "
+                f"by type: {dict(sorted(item_type_counts.items()))}; "
+                f"missing abstracts: {missing_abstracts}"
+            )
         corpus = [c for c in corpus if c['data']['abstractNote'] != '']
         def get_collection_path(col_key:str) -> str:
             if p := collections[col_key]['data']['parentCollection']:
