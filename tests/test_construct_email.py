@@ -73,6 +73,23 @@ def test_get_block_html_contains_all_fields():
     assert "MIT" in html
 
 
+def test_get_block_html_contains_html_and_pdf_links():
+    html = get_block_html(
+        "Title",
+        "Auth",
+        "3.5",
+        "中文摘要",
+        "https://arxiv.org/pdf/1234.5678",
+        "MIT",
+        "https://arxiv.org/html/1234.5678",
+    )
+    assert "中文摘要" in html
+    assert "https://arxiv.org/html/1234.5678" in html
+    assert "阅读 HTML" in html
+    assert "https://arxiv.org/pdf/1234.5678" in html
+    assert "下载 PDF" in html
+
+
 def test_get_empty_html():
     html = get_empty_html()
     assert "No Papers Today" in html
